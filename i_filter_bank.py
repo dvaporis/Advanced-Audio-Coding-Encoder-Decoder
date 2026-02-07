@@ -2,7 +2,7 @@ import numpy as np
 from scipy.signal.windows import kaiser
 
 
-def filter_bank(frame_F: np.ndarray, frame_type: str, win_type: str) -> np.ndarray:
+def i_filter_bank(frame_F: np.ndarray, frame_type: str, win_type: str) -> np.ndarray:
 	"""Inverse AAC filter bank (IMDCT + windowing) to recover 2048x2 frame."""
 	if frame_type not in {"OLS", "ESH", "LSS", "LPS"}:
 		raise ValueError("frame_type must be one of 'OLS', 'ESH', 'LSS', 'LPS'")
