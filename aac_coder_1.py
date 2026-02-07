@@ -24,14 +24,17 @@ def aac_coder_1(filename_in: str) -> list:
 	pad = np.zeros((1024, 2))
 	x_padded = np.vstack([pad, x, pad])
 
+    # Define frame length and hop size (overlap of 50%).
 	frame_len = 2048
 	hop = 1024
 	num_frames = (x_padded.shape[0] - frame_len) // hop + 1
 
+    # Initialize list to hold AAC frame dictionaries and previous frame type.
 	aac_seq_1 = []
 	prev_frame_type = "OLS"
 	win_type = "KBD"
 
+    # Process each frame and determine frame type using SSC.
 	for i in range(num_frames):
 		start = i * hop
 		frame_T = x_padded[start:start + frame_len, :]
@@ -41,6 +44,7 @@ def aac_coder_1(filename_in: str) -> list:
 		else:
 			next_frame_T = np.zeros_like(frame_T)
 
+        # Determine frame type using SSC and apply filter bank to get MDCT coefficients.
 		frame_type = SSC(frame_T, next_frame_T, prev_frame_type)
 		frame_F = filter_bank(frame_T, frame_type, win_type)
 
@@ -52,6 +56,7 @@ def aac_coder_1(filename_in: str) -> list:
 			chl = frame_F[:, 0].reshape(1024, 1)
 			chr_ = frame_F[:, 1].reshape(1024, 1)
 
+        # Append the frame dictionary to the AAC sequence list.
 		aac_seq_1.append(
 			{
 				"frame_type": frame_type,
@@ -61,6 +66,7 @@ def aac_coder_1(filename_in: str) -> list:
 			}
 		)
 
+        # Update previous frame type for next iteration.
 		prev_frame_type = frame_type
 
 	return aac_seq_1
