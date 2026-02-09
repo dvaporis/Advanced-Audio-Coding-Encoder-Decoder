@@ -34,9 +34,9 @@ def demo_aac_1(filename_in: str, filename_out: str) -> float:
 	if noise_power == 0:
 		return float("inf")
 
-	snr = 10 * np.log10(signal_power / noise_power)
-	return snr
+	SNR = 10 * np.log10(signal_power / noise_power)
+	return SNR
 
 # Run the demo with the specified input and output files, and print the SNR.
-snr = demo_aac_1("LicorDeCalandraca.wav", "output_1.wav")
-print(f"SNR: {snr:.2f} dB")
+SNR = demo_aac_1("LicorDeCalandraca.wav", "output_1.wav")
+print(f"SNR: {SNR:.2f} dB")
