@@ -56,8 +56,8 @@ def i_aac_coder_2(aac_seq_2: list, filename_out: str) -> np.ndarray:
 		x_padded[start:start + frame_len, :] += frame_T
 
 	# Remove the initial and final 1024 zero padding added in the encoder.
-	x_rec = x_padded[1024:-1024, :]
+	x = x_padded[1024:-1024, :]
 
 	# Write the reconstructed signal to the output file.
-	sf.write(filename_out, x_rec, 48000)
-	return x_rec
+	sf.write(filename_out, x, 48000)
+	return x
