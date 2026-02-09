@@ -13,13 +13,15 @@ def SSC(frame_T: np.ndarray, next_frame_T : np.ndarray, prev_frame_type: str) ->
         next_is_esh = _is_esh_per_channel(next_frame_T)
         ch1 = _frame_type_from_prev(prev_frame_type, next_is_esh[0])
         ch2 = _frame_type_from_prev(prev_frame_type, next_is_esh[1])
-        return _combine_frame_types(ch1, ch2)
+        frame_type = _combine_frame_types(ch1, ch2)
+        return frame_type
     else :
         # Per-channel ESH detection on the next frame
         next_is_esh = _is_esh_per_channel(next_frame_T)
         ch1 = _frame_type_from_prev(prev_frame_type, next_is_esh[0])
         ch2 = _frame_type_from_prev(prev_frame_type, next_is_esh[1])
-        return _combine_frame_types(ch1, ch2)
+        frame_type = _combine_frame_types(ch1, ch2)
+        return frame_type
 
 
 def _frame_type_from_prev(prev_frame_type: str, next_is_esh: bool) -> str:

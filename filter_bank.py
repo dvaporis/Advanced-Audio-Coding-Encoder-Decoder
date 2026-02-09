@@ -41,11 +41,13 @@ def filter_bank(frame_T: np.ndarray, frame_type: str, win_type: str) -> np.ndarr
                 long_win[1024:],
             ]
         )
-        return _mdct_frame(frame_T, lps_win)
+        frame_F = _mdct_frame(frame_T, lps_win)
+        return frame_F
 
     # ESH
     else:
-        return _mdct_esh(frame_T, short_win)
+        frame_F = _mdct_esh(frame_T, short_win)
+        return frame_F
 
 
 def _make_window(N: int, win_type: str, beta: float) -> np.ndarray:
