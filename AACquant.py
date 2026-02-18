@@ -112,6 +112,13 @@ def _quantize_subframe(frame_F: np.ndarray, bands: np.ndarray, SMR: np.ndarray, 
 	else:
 		alpha_hat = 0.0
 	
+	# COMPRESSION CONTROL: Adjust this value to control compression level
+	# Higher values = more compression (coarser quantization)
+	# 0 = standard quality, 10-30 = medium compression, 30-60 = high compression
+	COMPRESSION_BIAS = 57  # <-- ADJUST THIS VALUE
+	
+	alpha_hat += COMPRESSION_BIAS
+	
 	# Initialize all scale factor gains with the initial approximation
 	alpha = np.full(n_bands, alpha_hat)
 	
