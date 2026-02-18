@@ -1,6 +1,5 @@
 import numpy as np
 import soundfile as sf
-from scipy.io import savemat, loadmat
 
 from aac_coder_3 import aac_coder_3
 from i_aac_coder_3 import i_aac_coder_3
