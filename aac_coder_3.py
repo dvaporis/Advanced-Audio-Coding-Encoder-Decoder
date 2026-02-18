@@ -110,7 +110,6 @@ def aac_coder_3(filename_in: str, filename_aac_coded: str) -> list:
 		# Store scale factors directly (not Huffman encoded due to range limitations)
 		chl_sfc_int = np.round(chl_sfc).astype(np.int32)
 		chr_sfc_int = np.round(chr_sfc).astype(np.int32)
-		print(f"Frame {i}: Type={frame_type}, Chl G={chl_G}, Chr G={chr_G}")
 		
 		# Huffman encode the quantized MDCT coefficients (S)
 		chl_S_flat = chl_S.flatten()
