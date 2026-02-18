@@ -6,7 +6,7 @@ import os
 
 from i_filter_bank import i_filter_bank
 from i_tns import i_tns
-from i_AACquant import i_aac_quantizer
+from i_aac_quantizer import i_aac_quantizer
 
 # Add the material directory to the path to import huff_utils
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'material'))

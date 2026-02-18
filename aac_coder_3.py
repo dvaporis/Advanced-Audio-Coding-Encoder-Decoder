@@ -8,7 +8,7 @@ from SSC import SSC
 from filter_bank import filter_bank
 from tns import tns
 from psycho import psycho
-from AACquant import aac_quantizer
+from aac_quantizer import aac_quantizer
 
 # Add the material directory to the path to import huff_utils
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'material'))
