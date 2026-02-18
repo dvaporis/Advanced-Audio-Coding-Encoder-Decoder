@@ -11,10 +11,11 @@ def i_aac_quantizer(S: np.ndarray, sfc: np.ndarray, G: np.ndarray | float, frame
 	S : np.ndarray
 		Quantized MDCT coefficients, shape (1024, 1) for all frame types
 	sfc : np.ndarray
-		Scale factors per band
+		DPCM-encoded scale factors per band
 		Shape: (NB, 8) for ESH, (NB, 1) for others
+		Note: sfc contains differences (sfc[0] = α[0], sfc[b] = α[b] - α[b-1] for b > 0)
 	G : np.ndarray or float
-		Global gain of the current frame
+		Global gain of the current frame (should match sfc[0])
 		- For EIGHT SHORT SEQUENCE (ESH): shape (8,) - one value per subframe (1 × 8)
 		- For other frame types: scalar - one value for all coefficients
 	frame_type : str
@@ -45,25 +46,16 @@ def i_aac_quantizer(S: np.ndarray, sfc: np.ndarray, G: np.ndarray | float, frame
 	
 	S_flat = S.flatten()
 	
-	# Handle G parameter - convert to proper format
-	if isinstance(G, (int, float)):
-		if frame_type == "ESH":
-			# Broadcast scalar to all 8 subframes
-			G_array = np.full(8, G)
+	if frame_type == "ESH":
+		# Handle G parameter for ESH frames
+		if isinstance(G, (int, float)):
+			G_array = np.full(8, float(G))
 		else:
-			G_val = float(G)
-	else:
-		G = np.asarray(G).flatten()
-		if frame_type == "ESH":
+			G = np.asarray(G).flatten()
 			if len(G) != 8:
 				raise ValueError(f"For ESH frames, G must have 8 values, got {len(G)}")
 			G_array = G.astype(np.float64)
-		else:
-			if len(G) != 1:
-				raise ValueError(f"For non-ESH frames, G must be scalar or single-element array, got {len(G)}")
-			G_val = float(G[0])
-	
-	if frame_type == "ESH":
+		
 		# Process each subframe separately
 		frame_F = np.zeros((frame_len, n_subframes))
 		
@@ -73,13 +65,21 @@ def i_aac_quantizer(S: np.ndarray, sfc: np.ndarray, G: np.ndarray | float, frame
 			S_sub = S_flat[start_idx:end_idx]
 			
 			sfc_sub = sfc[:, sub]
-			
 			G_sub = float(G_array[sub])
 			
 			frame_sub = _dequantize_subframe(S_sub, sfc_sub, G_sub, bands, n_bands, frame_len)
 			frame_F[:, sub] = frame_sub
 	else:
-		# Single frame - G should be scalar
+		# Handle G parameter for non-ESH frames
+		if isinstance(G, (int, float)):
+			G_val = float(G)
+		else:
+			G = np.asarray(G).flatten()
+			if len(G) != 1:
+				raise ValueError(f"For non-ESH frames, G must be scalar or single-element array, got {len(G)}")
+			G_val = float(G[0])
+		
+		# Single frame
 		frame_F = _dequantize_subframe(S_flat, sfc[:, 0], G_val, bands, n_bands, frame_len)
 		frame_F = frame_F.reshape(-1, 1)
 	
@@ -87,10 +87,22 @@ def i_aac_quantizer(S: np.ndarray, sfc: np.ndarray, G: np.ndarray | float, frame
 
 
 def _dequantize_subframe(S: np.ndarray, sfc: np.ndarray, G: float, bands: np.ndarray, n_bands: int, frame_len: int) -> np.ndarray:
-	"""Dequantize a single subframe with scale factor bands."""
+	"""
+	Dequantize a single subframe with scale factor bands.
+	
+	Decodes DPCM-encoded scale factors and applies inverse quantization.
+	"""
 	frame_F = np.zeros(frame_len)
 	
-	# Dequantize each scale factor band
+	# Step 1: Decode DPCM to reconstruct α(b) values
+	# sfc(0) = α(0) = G
+	# sfc(b) = α(b) - α(b-1) for b > 0
+	alpha = np.zeros(n_bands)
+	alpha[0] = sfc[0]  # Should equal G
+	for b in range(1, n_bands):
+		alpha[b] = alpha[b - 1] + sfc[b]
+	
+	# Step 2: Dequantize each scale factor band using reconstructed α(b)
 	for b in range(n_bands):
 		if b >= len(bands):
 			break
@@ -105,13 +117,12 @@ def _dequantize_subframe(S: np.ndarray, sfc: np.ndarray, G: float, bands: np.nda
 		if end < start:
 			continue
 		
-		# Get scale factor for this band
-		sf = sfc[b] if b < len(sfc) else 0
-		
-		# Inverse quantization formula: x[i] = sign(q[i]) * 2^((G-sf)/4) * |q[i]|^(4/3)
-		Q = 2.0 ** ((G - sf) / 4.0)
-		
+		# Get quantized values for this band
 		q = S[start:end + 1]
+		
+		# Inverse quantization formula: X̂(k) = sgn(S(k)) * |S(k)|^(4/3) × 2^(α/4)
+		Q = 2.0 ** (alpha[b] / 4.0)
+		
 		q_sign = np.sign(q)
 		q_abs = np.abs(q).astype(np.float64)
 		
