@@ -2,7 +2,7 @@ import numpy as np
 from scipy.io import loadmat
 
 
-def aac_quantizer(frame_F: np.ndarray, frame_type: str, SMR: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def aac_quantizer(frame_F: np.ndarray, frame_type: str, SMR: np.ndarray, COMPRESSION_BIAS: float = 0.0) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
 	"""
 	AAC quantizer with scale factor bands and psychoacoustic model.
 	
@@ -58,7 +58,7 @@ def aac_quantizer(frame_F: np.ndarray, frame_type: str, SMR: np.ndarray) -> tupl
 			frame_sub = frame_F[:, sub]
 			SMR_sub = SMR[:, sub]
 			
-			S_sub, sfc_sub, G_sub = _quantize_subframe(frame_sub, bands, SMR_sub, n_bands)
+			S_sub, sfc_sub, G_sub = _quantize_subframe(frame_sub, bands, SMR_sub, n_bands, COMPRESSION_BIAS)
 			
 			S_all.append(S_sub)
 			sfc[:, sub] = sfc_sub
@@ -71,7 +71,7 @@ def aac_quantizer(frame_F: np.ndarray, frame_type: str, SMR: np.ndarray) -> tupl
 		frame_flat = frame_F.flatten()
 		SMR_flat = SMR.flatten()
 		
-		S, sfc, G = _quantize_subframe(frame_flat, bands, SMR_flat, n_bands)
+		S, sfc, G = _quantize_subframe(frame_flat, bands, SMR_flat, n_bands, COMPRESSION_BIAS)
 		
 		S = S.reshape(-1, 1)
 		sfc = sfc.reshape(-1, 1)
@@ -80,7 +80,7 @@ def aac_quantizer(frame_F: np.ndarray, frame_type: str, SMR: np.ndarray) -> tupl
 	return S, sfc, G
 
 
-def _quantize_subframe(frame_F: np.ndarray, bands: np.ndarray, SMR: np.ndarray, n_bands: int) -> tuple[np.ndarray, np.ndarray, float]:
+def _quantize_subframe(frame_F: np.ndarray, bands: np.ndarray, SMR: np.ndarray, n_bands: int, COMPRESSION_BIAS: float = 0.0) -> tuple[np.ndarray, np.ndarray, float]:
 	"""
 	Quantize a single subframe with scale factor bands according to AAC standard.
 	
@@ -115,7 +115,6 @@ def _quantize_subframe(frame_F: np.ndarray, bands: np.ndarray, SMR: np.ndarray, 
 	# COMPRESSION CONTROL: Adjust this value to control compression level
 	# Higher values = more compression (coarser quantization)
 	# 0 = standard quality, 10-30 = medium compression, 30-60 = high compression
-	COMPRESSION_BIAS = 57  # <-- ADJUST THIS VALUE
 	
 	alpha_hat += COMPRESSION_BIAS
 	

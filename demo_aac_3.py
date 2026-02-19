@@ -1,9 +1,17 @@
+import sys
 import numpy as np
 import soundfile as sf
 
 from aac_coder_3 import aac_coder_3
 from i_aac_coder_3 import i_aac_coder_3
 
+COMPRESSION_BIAS = 57  # Adjust this value to control compression level (higher = more compression)
+if (len(sys.argv) > 1):
+	try:
+		COMPRESSION_BIAS = float(sys.argv[1])
+		print(f"Using COMPRESSION_BIAS={COMPRESSION_BIAS}")
+	except ValueError:
+		print(f"Invalid COMPRESSION_BIAS value '{sys.argv[1]}', using default {COMPRESSION_BIAS}")
 
 def demo_aac_3(filename_in: str, filename_out: str, filename_aac_coded: str) -> tuple[float, float, float]:
 	"""
@@ -28,7 +36,7 @@ def demo_aac_3(filename_in: str, filename_out: str, filename_aac_coded: str) -> 
 		Compression ratio (original_bitrate / compressed_bitrate).
 	"""
 	# Encode - aac_coder_3 now saves to filename_aac_coded itself
-	aac_seq_3 = aac_coder_3(filename_in, filename_aac_coded)
+	aac_seq_3 = aac_coder_3(filename_in, filename_aac_coded, COMPRESSION_BIAS)
 
 	# Calculate total bitstream length
 	# Count bits from scale factors (sfc), quantized coefficients (stream), and codebooks

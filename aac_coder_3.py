@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'material'))
 from huff_utils import load_LUT, encode_huff
 
 
-def aac_coder_3(filename_in: str, filename_aac_coded: str) -> list:
+def aac_coder_3(filename_in: str, filename_aac_coded: str, COMPRESSION_BIAS: float = 0.0) -> list:
 	"""
 	AAC encoder level 3: apply psychoacoustic model, TNS, quantization, and Huffman encoding.
 	
@@ -104,8 +104,8 @@ def aac_coder_3(filename_in: str, filename_aac_coded: str) -> list:
 		chr_T, chr_tns_coeffs = tns(chr_F, frame_type)
 
 		# Apply quantization per channel - returns (S, sfc, G)
-		chl_S, chl_sfc, chl_G = aac_quantizer(chl_T, frame_type, chl_SMR)
-		chr_S, chr_sfc, chr_G = aac_quantizer(chr_T, frame_type, chr_SMR)
+		chl_S, chl_sfc, chl_G = aac_quantizer(chl_T, frame_type, chl_SMR, COMPRESSION_BIAS)
+		chr_S, chr_sfc, chr_G = aac_quantizer(chr_T, frame_type, chr_SMR, COMPRESSION_BIAS)
 
 		# Store scale factors directly (not Huffman encoded due to range limitations)
 		chl_sfc_int = np.round(chl_sfc).astype(np.int32)
