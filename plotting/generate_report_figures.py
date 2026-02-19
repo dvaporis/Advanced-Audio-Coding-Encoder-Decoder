@@ -132,7 +132,7 @@ def save_spectrogram_comparison(original: np.ndarray, out3: np.ndarray, fs: int,
 		ax.set_ylim(0, fs / 2)
 
 	# fig.tight_layout()
-	fig.savefig(os.path.join(output_dir, "spectrogram_comparison.png"), format="png", dpi=300)
+	fig.savefig(os.path.join(output_dir, "spectrogram_comparison.png"), format="png", dpi=300, bbox_inches="tight")
 	plt.close(fig)
 
 
