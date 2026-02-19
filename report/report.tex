@@ -58,7 +58,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \lhead{Βαπόρης - Ντελόπουλος}
-\rhead{Απλοποιημένη κωδικοποίηση/αποκωδικοποίηση AAC}
+\rhead{Απλοποιημένος κωδικοποιητής/αποκωδικοποιητής AAC}
 \cfoot{\thepage}
 
 
@@ -102,6 +102,48 @@
 \clearpage
 
 \section{Εισαγωγή}
+
+\section{Επίπεδο 3}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{compression_rates_vs_bias.pdf}
+  \caption{Σχέση μεταξύ COMPRESSION\_BIAS και Compression Rate}
+  \label{fig:compression_rates_vs_bias}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{snr_vs_bias.pdf}
+  \caption{Σχέση μεταξύ COMPRESSION\_BIAS και SNR}
+  \label{fig:snr_vs_bias}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{waveform_zoom_comparison.pdf}
+  \caption{Σύγκριση κυματομορφών (COMPRESSION\_BIAS=30)}
+  \label{fig:waveform_zoom_comparison}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{frame_type_distribution.pdf}
+  \caption{Κατανομή τύπων πλαισίων (COMPRESSION\_BIAS=30)}
+  \label{fig:frame_types_distribution}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{error_signal_over_time.pdf}
+  \caption{Σφάλμα σήματος σε σχέση με τον χρόνο (COMPRESSION\_BIAS=30)}
+  \label{fig:error_signal_over_time}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{spectrogram_comparison.png}
+  \caption{Σύγκριση φασματογράμματος (COMPRESSION\_BIAS=30)}
+  \label{fig:spectrogram_comparison}
+\end{figure}
 
 \clearpage
 \listoffigures
